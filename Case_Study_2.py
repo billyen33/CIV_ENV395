@@ -19,7 +19,7 @@ U_denver = 5 * 3600 #in m/hours
 U_pho = 2 * 3600
 U_chi = 8 * 3600
 
-Temp_d = ((45-32)*5)/9 + 273.15
+Temp_d = ((45-32)*5)/9 + 273.15 #convert F to K
 Temp_p = ((78-32)*5)/9 + 273.15
 Temp_c = ((57-32)*5)/9 + 273.15
 
@@ -53,9 +53,9 @@ Kgl_c = 1/((1/Kl_c)+((Kh_c*R*Temp_c)/Kg_c))
 
 #Equation time!!!
 S = (Q*Cin)/V #defined source term
-Lc = ((Q+Kgl_c*SA)/V)-kd_c #lost terms defined here
-Ld = ((Q+Kgl_d*SA)/V)-kd_d
-Lp = ((Q+Kgl_p*SA)/V)-kd_p
+Lc = ((Q+Kgl_c*SA)/V)+kd_c #lost terms defined here
+Ld = ((Q+Kgl_d*SA)/V)+kd_d
+Lp = ((Q+Kgl_p*SA)/V)+kd_p
 #Chicago
 C_chicago = []
 #generate C with respect to time
