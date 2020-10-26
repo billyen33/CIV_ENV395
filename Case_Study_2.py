@@ -72,3 +72,14 @@ C_phoenix = []
 for item in t:
     C_phoenix.append(S/Lc - (S/Lp - Cin)*math.exp(-Lp*item))
 
+#graph
+from matplotlib import pyplot as plt
+fig, ax = plt.subplots()
+ax.plot(t, C_chicago, label = 'Chicago')
+ax.plot(t, C_denver, label = "Denver")
+ax.plot(t, C_phoenix, label = 'Phoenix')
+ax.set_xlabel('Time (hours)')
+ax.set_ylabel('Concentration of MTBE (mg/m^3)')
+ax.set_title('Concentration of MTBE (mg/m^3) vs Time (hours) in Three Cities')
+ax.legend()
+plt.show()
