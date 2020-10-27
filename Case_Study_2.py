@@ -4,16 +4,19 @@ import math
 #initialize constants
 R = 0.082057 * 0.001 #(L*atm)/(mol*K) * 0.001 cubic meter/1 L
 Q = 25 #m^3/hr
-V = 350
-depth = 12
+V = 350 #m^3
+depth = 12 #m
 SA = V/depth #m^2
 Cin = 50 #mg/m^3
-theta = V/Q
+theta = V/Q #hour
 
 #generate time list
-t = []
-for ii in range(70):
-    t.append(ii/10)
+t1 = []
+for ii in range(70): #part 1
+    t1.append(ii/10)
+t2 = []
+for ii in range(50): #part 2
+    t2.append(ii)
 
 U_denver = 5 * 3600 #in m/hours
 U_pho = 2 * 3600
@@ -53,39 +56,88 @@ Kgl_c = 1/((1/Kl_c)+((Kh_c*R*Temp_c)/Kg_c))
 
 #Equation time!!!
 S = (Q*Cin)/V #defined source term
-Lc = ((Q+Kgl_c*SA)/V)+kd_c #lost terms defined here
+Lc = ((Q+Kgl_c*SA)/V)+kd_c #loss terms defined here
 Ld = ((Q+Kgl_d*SA)/V)+kd_d
 Lp = ((Q+Kgl_p*SA)/V)+kd_p
 #Chicago
 C_chicago = []
 #generate C with respect to time
-for item in t:
+for item in t1:
     C_chicago.append(S/Lc - (S/Lc - Cin)*math.exp(-Lc*item))
 
 #Denver
 C_denver = []
 #generate C with respect to time
-for item in t:
+for item in t1:
     C_denver.append(S/Ld - (S/Ld - Cin)*math.exp(-Ld*item))
 
 #Pheonix
 C_phoenix = []
 #generate C with respect to time
-for item in t:
+for item in t1:
     C_phoenix.append(S/Lp - (S/Lp - Cin)*math.exp(-Lp*item))
 
-print('Phoenix: '+ str(S/Lp - (S/Lp - Cin)*math.exp(-Lp*(theta))))
-print('Chicago: '+ str(S/Lc - (S/Lc - Cin)*math.exp(-Lc*(theta))))
-print('Denver: '+ str(S/Ld - (S/Ld - Cin)*math.exp(-Ld*(theta))))
+#print('Phoenix: '+ str(S/Lp - (S/Lp - Cin)*math.exp(-Lp*(theta))))
+#print('Chicago: '+ str(S/Lc - (S/Lc - Cin)*math.exp(-Lc*(theta))))
+#print('Denver: '+ str(S/Ld - (S/Ld - Cin)*math.exp(-Ld*(theta))))
 
+#Part 2
+DOmin = 4 * 1000 #g/m^3 * 1000 mg/g
+DOw = 1 * 1000 #g/m^3 * 1000 mg/g
+DOs = 9 * 1000 #g/m^3 * 1000 mg/g
+X = 2.7273
+Kglo_d = 0.25 #m/hr
+Kglo_p = 1.2
+Kglo_c = 1
+DOt_d = []
+DOt_p = []
+DOt_c = []
+# Solve for DO(t)
+for item in t2:
+    #Cmtbe at each city
+    Cmtbe_d = S/Ld - (S/Ld - Cin)*math.exp(-Ld*(item))
+    Cmtbe_p = S/Lp - (S/Lp - Cin)*math.exp(-Lp*(item))
+    Cmtbe_c = S/Lc - (S/Lc - Cin)*math.exp(-Lc*(item))
+    #S terms
+    Soxygen_d = (Q*DOw/V) - (X*kd_d*Cmtbe_d)
+    Soxygen_p = (Q*DOw/V) - (X*kd_p*Cmtbe_p)
+    Soxygen_c = (Q*DOw/V) - (X*kd_c*Cmtbe_c)
+    #L terms
+    Loxygen_d = (-Kglo_d*SA+Q)/V
+    Loxygen_p = (-Kglo_p*SA+Q)/V
+    Loxygen_c = (-Kglo_c*SA+Q)/V
+    #DOu terms
+    DOu_d = Soxygen_d/Loxygen_d
+    DOu_p = Soxygen_p/Loxygen_p
+    DOu_c = Soxygen_c/Loxygen_c
+    #solve for DO(t)
+    DOt_d.append(DOu_d - (DOu_d - DOs)*math.exp(-Loxygen_d*item))
+    DOt_p.append(DOu_p - (DOu_p - DOs)*math.exp(-Loxygen_p*item))
+    DOt_c.append(DOu_c - (DOu_c - DOs)*math.exp(-Loxygen_c*item))
+#print(DOt_d[0])
+print(DOt_p[0])
+#print(DOt_c)
 #graph
 from matplotlib import pyplot as plt
-fig, ax = plt.subplots()
-ax.plot(t, C_chicago, label = 'Chicago')
-ax.plot(t, C_denver, label = "Denver")
-ax.plot(t, C_phoenix, label = 'Phoenix')
-ax.set_xlabel('Time (hours)')
-ax.set_ylabel('Concentration of MTBE (mg/m^3)')
-ax.set_title('Concentration of MTBE (mg/m^3) vs Time (hours) in Three Cities')
-ax.legend()
+#fig, ax = plt.subplots()
+#ax.plot(t1, C_chicago, label = 'Chicago')
+#ax.plot(t1, C_denver, label = "Denver")
+#ax.plot(t1, C_phoenix, label = 'Phoenix')
+#ax.set_xlabel('Time (hours)')
+#ax.set_ylabel('Concentration of MTBE (mg/m^3)')
+#ax.set_title('Concentration of MTBE (mg/m^3) vs Time (hours) in Three Cities')
+#ax.legend()
+line = []
+for item in t2:
+    line.append(4000)
+fig1, ax1 = plt.subplots()
+ax1.plot(t2, DOt_c, label = 'Chicago')
+ax1.plot(t2, DOt_d, label = "Denver")
+ax1.plot(t2, DOt_p, label = 'Phoenix')
+ax1.plot(t2, line, label = 'Safety Level')
+ax1.set_xlabel('Time (hours)')
+ax1.set_ylabel('Concentration of DO (mg/m^3)')
+ax1.set_title('Concentration of DO (mg/m^3) vs Time (hours) in Three Cities')
+ax1.legend()
+
 plt.show()
