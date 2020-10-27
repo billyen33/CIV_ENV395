@@ -15,7 +15,7 @@ t1 = []
 for ii in range(70): #part 1
     t1.append(ii/10)
 t2 = []
-for ii in range(50): #part 2
+for ii in range(100): #part 2
     t2.append(ii)
 
 U_denver = 5 * 3600 #in m/hours
@@ -99,13 +99,21 @@ for item in t2:
     Cmtbe_p = S/Lp - (S/Lp - Cin)*math.exp(-Lp*(item))
     Cmtbe_c = S/Lc - (S/Lc - Cin)*math.exp(-Lc*(item))
     #S terms
-    Soxygen_d = (Q*DOw/V) - (X*kd_d*Cmtbe_d)
+    '''Soxygen_d = (Q*DOw/V) - (X*kd_d*Cmtbe_d)
     Soxygen_p = (Q*DOw/V) - (X*kd_p*Cmtbe_p)
-    Soxygen_c = (Q*DOw/V) - (X*kd_c*Cmtbe_c)
+    Soxygen_c = (Q*DOw/V) - (X*kd_c*Cmtbe_c)'''
+
+    Soxygen_d = (Q*DOw/V) - (X*kd_d*Cmtbe_d) + (Kglo_d*DOs*SA)/V
+    Soxygen_p = (Q*DOw/V) - (X*kd_p*Cmtbe_p) + (Kglo_p*DOs*SA)/V
+    Soxygen_c = (Q*DOw/V) - (X*kd_c*Cmtbe_c) + (Kglo_c*DOs*SA)/V
     #L terms
-    Loxygen_d = (-Kglo_d*SA+Q)/V
+    '''Loxygen_d = (-Kglo_d*SA+Q)/V
     Loxygen_p = (-Kglo_p*SA+Q)/V
-    Loxygen_c = (-Kglo_c*SA+Q)/V
+    Loxygen_c = (-Kglo_c*SA+Q)/V'''
+
+    Loxygen_d = Q/V
+    Loxygen_p = Q/V
+    Loxygen_c = Q/V
     #DOu terms
     DOu_d = Soxygen_d/Loxygen_d
     DOu_p = Soxygen_p/Loxygen_p
