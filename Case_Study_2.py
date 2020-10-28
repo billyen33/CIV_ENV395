@@ -103,6 +103,9 @@ for item in t2:
     Soxygen_p = (Q*DOw/V) - (X*kd_p*Cmtbe_p)
     Soxygen_c = (Q*DOw/V) - (X*kd_c*Cmtbe_c)'''
 
+    '''Soxygen_d = (Q*DOw/V) - (X*kd_d*Cmtbe_d) + (Kglo_d*DOs*SA)/V
+    Soxygen_p = (Q*DOw/V) - (X*kd_p*Cmtbe_p) + (Kglo_p*DOs*SA)/V
+    Soxygen_c = (Q*DOw/V) - (X*kd_c*Cmtbe_c) + (Kglo_c*DOs*SA)/V'''
     Soxygen_d = (Q*DOw/V) - (X*kd_d*Cmtbe_d) + (Kglo_d*DOs*SA)/V
     Soxygen_p = (Q*DOw/V) - (X*kd_p*Cmtbe_p) + (Kglo_p*DOs*SA)/V
     Soxygen_c = (Q*DOw/V) - (X*kd_c*Cmtbe_c) + (Kglo_c*DOs*SA)/V
@@ -111,9 +114,12 @@ for item in t2:
     Loxygen_p = (-Kglo_p*SA+Q)/V
     Loxygen_c = (-Kglo_c*SA+Q)/V'''
 
-    Loxygen_d = Q/V
+    '''Loxygen_d = Q/V
     Loxygen_p = Q/V
-    Loxygen_c = Q/V
+    Loxygen_c = Q/V'''
+    Loxygen_d = (Kglo_d*SA+Q)/V
+    Loxygen_p = (Kglo_p*SA+Q)/V
+    Loxygen_c = (Kglo_c*SA+Q)/V
     #DOu terms
     DOu_d = Soxygen_d/Loxygen_d
     DOu_p = Soxygen_p/Loxygen_p
