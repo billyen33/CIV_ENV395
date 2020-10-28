@@ -80,6 +80,20 @@ for item in t1:
 #print('Phoenix: '+ str(S/Lp - (S/Lp - Cin)*math.exp(-Lp*(theta))))
 #print('Chicago: '+ str(S/Lc - (S/Lc - Cin)*math.exp(-Lc*(theta))))
 #print('Denver: '+ str(S/Ld - (S/Ld - Cin)*math.exp(-Ld*(theta))))
+#graph
+safe_MTBE = []
+for item in t1:
+    safe_MTBE.append(10)
+from matplotlib import pyplot as plt
+fig, ax = plt.subplots()
+ax.plot(t1, safe_MTBE, linestyle = 'dashed', color='red', label = 'Safety Level')
+ax.plot(t1, C_chicago, label = 'Chicago')
+ax.plot(t1, C_denver, label = "Denver")
+ax.plot(t1, C_phoenix, label = 'Phoenix')
+ax.set_xlabel('Time (hours)')
+ax.set_ylabel('Concentration of MTBE (mg/m^3)')
+ax.set_title('Concentration of MTBE (mg/m^3) vs Time (hours) in Three Cities')
+ax.legend()
 
 #Part 2
 DOmin = 4 * 1000 #g/m^3 * 1000 mg/g
@@ -125,33 +139,24 @@ for item in t2:
     DOu_p = Soxygen_p/Loxygen_p
     DOu_c = Soxygen_c/Loxygen_c
     #solve for DO(t)
-    DOt_d.append(DOu_d - (DOu_d - DOs)*math.exp(-Loxygen_d*item))
-    DOt_p.append(DOu_p - (DOu_p - DOs)*math.exp(-Loxygen_p*item))
-    DOt_c.append(DOu_c - (DOu_c - DOs)*math.exp(-Loxygen_c*item))
+    DOt_d.append((DOu_d - (DOu_d - DOs)*math.exp(-Loxygen_d*item))/1000) #add in terms of g/m^3
+    DOt_p.append((DOu_p - (DOu_p - DOs)*math.exp(-Loxygen_p*item))/1000)
+    DOt_c.append((DOu_c - (DOu_c - DOs)*math.exp(-Loxygen_c*item))/1000)
 #print(DOt_d[0])
-print(DOt_p[0])
+#print(DOt_p[0])
 #print(DOt_c)
 #graph
-from matplotlib import pyplot as plt
-#fig, ax = plt.subplots()
-#ax.plot(t1, C_chicago, label = 'Chicago')
-#ax.plot(t1, C_denver, label = "Denver")
-#ax.plot(t1, C_phoenix, label = 'Phoenix')
-#ax.set_xlabel('Time (hours)')
-#ax.set_ylabel('Concentration of MTBE (mg/m^3)')
-#ax.set_title('Concentration of MTBE (mg/m^3) vs Time (hours) in Three Cities')
-#ax.legend()
 line = []
 for item in t2:
-    line.append(4000)
+    line.append(4)
 fig1, ax1 = plt.subplots()
+ax1.plot(t2, line, linestyle = 'dashed', color='red', label = 'Safety Level')
 ax1.plot(t2, DOt_c, label = 'Chicago')
 ax1.plot(t2, DOt_d, label = "Denver")
 ax1.plot(t2, DOt_p, label = 'Phoenix')
-ax1.plot(t2, line, label = 'Safety Level')
 ax1.set_xlabel('Time (hours)')
-ax1.set_ylabel('Concentration of DO (mg/m^3)')
-ax1.set_title('Concentration of DO (mg/m^3) vs Time (hours) in Three Cities')
+ax1.set_ylabel('Concentration of DO (g/m^3)')
+ax1.set_title('Concentration of DO (g/m^3) vs Time (hours) in Three Cities')
 ax1.legend()
 
 plt.show()
