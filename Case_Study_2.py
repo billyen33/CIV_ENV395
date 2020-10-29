@@ -2,7 +2,7 @@
 import math
 
 #initialize constants
-R = 0.082057 * 0.001 #(L*atm)/(mol*K) * 0.001 cubic meter/1 L
+R = 0.082057 #(L*atm)/(mol*K)
 Q = 25 #m^3/hr
 V = 350 #m^3
 depth = 12 #m
@@ -12,7 +12,7 @@ theta = V/Q #hour
 
 #generate time list
 t1 = []
-for ii in range(70): #part 1
+for ii in range(160): #part 1
     t1.append(ii/10)
 t2 = []
 for ii in range(100): #part 2
@@ -49,11 +49,12 @@ Kl_c = ((Dw_c*0.0014*((U_chi)**2))/(2.6*(10**(-5))))**(1/3)
 Kg_d = ((Da_d/0.26)*7*U_denver)**(1/2)
 Kg_p = ((Da_p/0.26)*7*U_pho)**(1/2)
 Kg_c = ((Da_c/0.26)*7*U_chi)**(1/2)
-
 Kgl_d = 1/((1/Kl_d)+((Kh_d*R*Temp_d)/Kg_d))
 Kgl_p = 1/((1/Kl_p)+((Kh_d*R*Temp_p)/Kg_p))
 Kgl_c = 1/((1/Kl_c)+((Kh_c*R*Temp_c)/Kg_c))
-
+'''print(Kgl_d)
+print(Kgl_p)
+print(Kgl_c)'''
 #Equation time!!!
 S = (Q*Cin)/V #defined source term
 Lc = ((Q+Kgl_c*SA)/V)+kd_c #loss terms defined here
@@ -76,10 +77,10 @@ C_phoenix = []
 #generate C with respect to time
 for item in t1:
     C_phoenix.append(S/Lp - (S/Lp - Cin)*math.exp(-Lp*item))
-
-#print('Phoenix: '+ str(S/Lp - (S/Lp - Cin)*math.exp(-Lp*(theta))))
-#print('Chicago: '+ str(S/Lc - (S/Lc - Cin)*math.exp(-Lc*(theta))))
-#print('Denver: '+ str(S/Ld - (S/Ld - Cin)*math.exp(-Ld*(theta))))
+print('Residence time: ' + str(theta) + 'hrs')
+print('Phoenix: '+ str(S/Lp - (S/Lp - Cin)*math.exp(-Lp*(theta))))
+print('Chicago: '+ str(S/Lc - (S/Lc - Cin)*math.exp(-Lc*(theta))))
+print('Denver: '+ str(S/Ld - (S/Ld - Cin)*math.exp(-Ld*(theta))))
 #graph
 safe_MTBE = []
 for item in t1:
