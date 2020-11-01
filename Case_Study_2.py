@@ -167,10 +167,10 @@ ax1.legend()
 
 
 #Part 3
-Kbod_c = 0.2155 #1/day
-Kbod_tv = 0.2197 #1/day
-Kbod_ev = 0.4605
-Kr = 0.3 #1/day
+Kbod_c = 0.2155/24 #1/day * 1 day/ 24hr
+Kbod_tv = 0.2197/24 #1/day
+Kbod_ev = 0.4605/24
+Kr = 0.3/24 #1/day
 DOir = 9 #mg/L
 DOiw = 9
 DOitv = 9
@@ -181,6 +181,9 @@ DOuw = 4.3
 DOutv = 6
 DOuet = 5
 
+Fr = Ffg = 1
+Fw = Ftv = Fet = 0.05
+
 Qr = 9*3600 #m^3/s * 3600 s/hr
 Qw = 1.2*3600
 Qtv = 0.9*3600
@@ -189,37 +192,55 @@ Av = 20 #m^2
 U_c = (Qr+Qw+Q)/Av
 D_not = DOir - (DOir*Qr + DOiw*Qw + DOt_c[-1]*Q)/(Q+Qr+Qw)
 #From Chicago to TechVille
-Lo = ((DOir-DOur)*Qr+(DOiw-DOuw)*Qw+Y*C_chicago[-1]*Q*0.001)/(Qr+Qw+Q)
+Lo = ((DOir-DOur)*Qr+(DOiw-DOuw)*Qw+Y*Cmtbe_c*Q*0.001)/(Qr+Qw+Q)
 Xc_c = (U_c/(Kr-Kbod_c))*np.log(Kr/Kbod_c)*(1-(D_not*(Kr-Kbod_c))/(Kbod_c*Lo))
-print(Xc_c/1000)
+#print(Xc_c/1000)
 distance_c = []
 DOx_c = []
 for item in range(int(Xc_c)+6001):
     distance_c.append(item)
     Dx_c = ((Kbod_c*Lo)/(Kr-Kbod_c))*(math.exp((-Kbod_c*item)/U_c)-math.exp((-Kr*item)/U_c))+D_not*math.exp((-Kbod_c*item)/U_c)
     DOx_c.append(DOir - Dx_c)
+#Dx_c = ((Kbod_c*Lo)/(Kr-Kbod_c))*(math.exp((-Kbod_c*900000)/U_c)-math.exp((-Kr*900000)/U_c))+D_not*math.exp((-Kbod_c*900000)/U_c)
+#print(Xc_c)
+#print(range(int(Xc_c)+6001))
 #From TechVille to EvansTown
 U_t = (Qr+Qw+Q)/Av
 DOi_into_tv = DOx_c[int(Xc_c)+6000]
 D_not_tv = DOir - (DOi_into_tv*(Qw+Q+Qr)+DOitv*Qtv)/(Qw+Q+Qr+Qtv)
 DOu_fg = (DOt_c[-1] - Y*C_chicago[-1]*Q*0.001)/1
-DOu_fromChicago = (Qr*DOur + Qw*DOuw + Q*DOu_fg)/(Q+Qw+Qr)
-Lo_tv = ((DOi_into_tv-DOu_fromChicago)*(Q+Qw+Qr)+(DOitv-DOutv)*Qtv)/(Qr+Qw+Q+Qtv)
+F_total_chicago = (Fr*Qr+Ffg*Q+Fw*Qw)/(Qr+Q+Qw)
+#DOu_fromChicago = (Qr*DOur + Qw*DOuw + Q*DOu_fg)/(Q+Qw+Qr)
+DOu_fromChicago = DOi_into_tv - Lo*F_total_chicago
+Lo_tv = (((DOi_into_tv-DOu_fromChicago)/F_total_chicago)*(Q+Qw+Qr)+((DOitv-DOutv)/0.05)*Qtv)/(Qr+Qw+Q+Qtv)
+#Lo_tv = (Lo*(Q+Qw+Qr)+((DOitv-DOutv)/0.05)*Qtv)/(Qr+Qw+Q+Qtv)
 Xc_tv = (U_t/(Kr-Kbod_tv))*np.log(Kr/Kbod_tv)*(1-(D_not_tv*(Kr-Kbod_tv))/(Kbod_tv*Lo_tv))
-print()
-distance_tv = []
+#print(1/F_total_chicago)
+#print(Xc_tv/1000-8)
+distance_tv_bad = []
 DOx_tv = []
-for item in range(50000):
-    distance_tv.append(item)
+for item in range(int(Xc_tv)-8000):
+    distance_tv_bad.append(item)
     Dx_tv = ((Kbod_tv*Lo_tv)/(Kr-Kbod_tv))*(math.exp((-Kbod_tv*item)/U_t)-math.exp((-Kr*item)/U_t))+D_not_tv*math.exp((-Kbod_tv*item)/U_t)
     DOx_tv.append(DOir - Dx_tv)
-
+distance_tv = []
+for item in distance_tv_bad:
+    distance_tv.append(item+Xc_c+6000)
+#total distance list generated here
+total_d_bad = distance_c + distance_tv
+total_d = []
+for item in total_d_bad:
+    total_d.append(item/1000)
+total_DOx = DOx_c + DOx_tv
+DO_limit = []
+for item in total_d:
+    DO_limit.append(4)
 fig2, ax2 = plt.subplots()
-#ax2.plot(t2, line, linestyle = 'dashed', color='red', label = 'Safety Level')
-ax2.plot(distance_tv, DOx_tv, label = 'Sag Curve')
+ax2.plot(total_d, DO_limit, linestyle = 'dashed', color='red', label = 'Safety Level')
+ax2.plot(total_d, total_DOx, label = 'Sag Curve')
 #ax2.plot(t2, DOt_d, label = "Denver")
 #ax2.plot(t2, DOt_p, label = 'Phoenix')
-ax2.set_xlabel('Distance (meters)')
+ax2.set_xlabel('Distance (km)')
 ax2.set_ylabel('Concentration of DO (mg/L)')
 ax2.set_title('DO Sag Curve')
 ax2.legend()
