@@ -171,15 +171,15 @@ Kbod_c = 0.2155/24 #1/day * 1 day/ 24hr
 Kbod_tv = 0.2197/24 #1/day
 Kbod_ev = 0.4605/24
 Kr = 0.3/24 #1/day
-DOir = 9 #mg/L
-DOiw = 9
-DOitv = 9
-DOiet = 9
+DOir = 9 * 1000 #mg/L * 1000L/1m^3
+DOiw = 9 *1000
+DOitv = 9 * 1000
+DOiet = 9 * 1000
 
-DOur = 7 #mg/L
-DOuw = 4.3
-DOutv = 6
-DOuet = 5
+DOur = 7 * 1000#mg/L* 1000L/1m^3
+DOuw = 4.3 * 1000
+DOutv = 6 * 1000
+DOuet = 5 * 1000
 
 Fr = Ffg = 1
 Fw = Ftv = Fet = 0.05
@@ -192,7 +192,7 @@ Av = 20 #m^2
 U_c = (Qr+Qw+Q)/Av
 D_not = DOir - (DOir*Qr + DOiw*Qw + DOt_c[-1]*Q)/(Q+Qr+Qw)
 #From Chicago to TechVille
-Lo = ((DOir-DOur)*Qr+(DOiw-DOuw)*Qw+Y*Cmtbe_c*Q*0.001)/(Qr+Qw+Q)
+Lo = ((DOir-DOur)*Qr+(DOiw-DOuw)*Qw+Y*Cmtbe_c*Q)/(Qr+Qw+Q)
 Xc_c = (U_c/(Kr-Kbod_c))*np.log(Kr/Kbod_c)*(1-(D_not*(Kr-Kbod_c))/(Kbod_c*Lo))
 #print(Xc_c/1000)
 distance_c = []
@@ -234,14 +234,14 @@ for item in total_d_bad:
 total_DOx = DOx_c + DOx_tv
 DO_limit = []
 for item in total_d:
-    DO_limit.append(4)
+    DO_limit.append(4000)
 fig2, ax2 = plt.subplots()
 ax2.plot(total_d, DO_limit, linestyle = 'dashed', color='red', label = 'Safety Level')
 ax2.plot(total_d, total_DOx, label = 'Sag Curve')
 #ax2.plot(t2, DOt_d, label = "Denver")
 #ax2.plot(t2, DOt_p, label = 'Phoenix')
 ax2.set_xlabel('Distance (km)')
-ax2.set_ylabel('Concentration of DO (mg/L)')
+ax2.set_ylabel('Concentration of DO (mg/m^3)')
 ax2.set_title('DO Sag Curve')
 ax2.legend()
 
