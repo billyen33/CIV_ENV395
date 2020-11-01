@@ -190,7 +190,6 @@ U_c = (Qr+Qw+Q)/Av
 D_not = DOir - (DOir*Qr + DOiw*Qw + DOt_c[-1]*Q)/(Q+Qr+Qw)
 #From Chicago to TechVille
 Lo = ((DOir-DOur)*Qr+(DOiw-DOuw)*Qw+Y*C_chicago[-1]*Q*0.001)/(Qr+Qw+Q)
-#Xc_c = (U_c/(Kr-Kbod_c))*np.log(Kr/Kbod_c)*(1-((DOir-(DOir*Qr + DOiw*Qw + DOt_c[-1]*Q)/(Q+Qr+Qw)))/(Kbod_c*Lo))
 Xc_c = (U_c/(Kr-Kbod_c))*np.log(Kr/Kbod_c)*(1-(D_not*(Kr-Kbod_c))/(Kbod_c*Lo))
 print(Xc_c/1000)
 distance_c = []
@@ -203,17 +202,16 @@ for item in range(int(Xc_c)+6001):
 U_t = (Qr+Qw+Q)/Av
 DOi_into_tv = DOx_c[int(Xc_c)+6000]
 D_not_tv = DOir - (DOi_into_tv*(Qw+Q+Qr)+DOitv*Qtv)/(Qw+Q+Qr+Qtv)
-#From Chicago to TechVille
 DOu_fg = (DOt_c[-1] - Y*C_chicago[-1]*Q*0.001)/1
 DOu_fromChicago = (Qr*DOur + Qw*DOuw + Q*DOu_fg)/(Q+Qw+Qr)
 Lo_tv = ((DOi_into_tv-DOu_fromChicago)*(Q+Qw+Qr)+(DOitv-DOutv)*Qtv)/(Qr+Qw+Q+Qtv)
-Xc_tv = (U_t/(Kr-Kbod_tv))*np.log(Kr/Kbod_tv)*(1-(D_not_tv*(Kr-Kbod_tv))/(Kbod_tv*Lo))
-print(Xc_tv/1000)
+Xc_tv = (U_t/(Kr-Kbod_tv))*np.log(Kr/Kbod_tv)*(1-(D_not_tv*(Kr-Kbod_tv))/(Kbod_tv*Lo_tv))
+print()
 distance_tv = []
 DOx_tv = []
-for item in range(10000):
+for item in range(50000):
     distance_tv.append(item)
-    Dx_tv = ((Kbod_tv*Lo)/(Kr-Kbod_tv))*(math.exp((-Kbod_tv*item)/U_t)-math.exp((-Kr*item)/U_t))+D_not*math.exp((-Kbod_tv*item)/U_t)
+    Dx_tv = ((Kbod_tv*Lo_tv)/(Kr-Kbod_tv))*(math.exp((-Kbod_tv*item)/U_t)-math.exp((-Kr*item)/U_t))+D_not_tv*math.exp((-Kbod_tv*item)/U_t)
     DOx_tv.append(DOir - Dx_tv)
 
 fig2, ax2 = plt.subplots()
