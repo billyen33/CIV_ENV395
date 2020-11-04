@@ -201,7 +201,7 @@ DOx_c = []
 
 for item in range(int(Xc_c)+6001):
     distance_c.append(item)
-    Dx_c = ((Kbod_c*Lo)/(Kr-Kbod_c))*(math.exp((-Kbod_c*item)/U_c)-math.exp((-Kr*item)/U_c))+D_not*math.exp((-Kbod_c*item)/U_c)
+    Dx_c = ((Kbod_c*Lo)/(Kr-Kbod_c))*(math.exp((-Kbod_c*item)/U_c)-math.exp((-Kr*item)/U_c))+D_not*math.exp((-Kr*item)/U_c)
     DOx_c.append(DOir - Dx_c)
 print(DOx_c.index(min(DOx_c)))
 print(Xc_c)
@@ -219,7 +219,7 @@ distance_tv_bad = []
 DOx_tv = []
 for item in range(int(Xc_tv)-7999):
     distance_tv_bad.append(item)
-    Dx_tv = ((Kbod_tv*Lo_tv)/(Kr-Kbod_tv))*(math.exp((-Kbod_tv*item)/U_t)-math.exp((-Kr*item)/U_t))+D_not_tv*math.exp((-Kbod_tv*item)/U_t)
+    Dx_tv = ((Kbod_tv*Lo_tv)/(Kr-Kbod_tv))*(math.exp((-Kbod_tv*item)/U_t)-math.exp((-Kr*item)/U_t))+D_not_tv*math.exp((-Kr*item)/U_t)
     DOx_tv.append(DOir - Dx_tv)
 print(DOx_tv.index(min(DOx_tv)))
 print(Xc_tv)
@@ -240,8 +240,7 @@ distance_ET_bad = []
 DOx_ET = []
 for item in range(int(Xc_ET)+10001):
     distance_ET_bad.append(item)
-    Dx_ET = ((Kbod_ev*Lo_ET)/(Kr-Kbod_ev))*(math.exp((-Kbod_ev*item)/U_ET)-math.exp((-Kr*item)/U_ET))+D_not_ET*math.exp((-Kbod_ev*item)/U_ET)
-    Dx_tv = ((Kbod_tv*Lo_tv)/(Kr-Kbod_tv))*(math.exp((-Kbod_tv*item)/U_t)-math.exp((-Kr*item)/U_t))+D_not_tv*math.exp((-Kbod_tv*item)/U_t)
+    Dx_ET = ((Kbod_ev*Lo_ET)/(Kr-Kbod_ev))*(math.exp((-Kbod_ev*item)/U_ET)-math.exp((-Kr*item)/U_ET))+D_not_ET*math.exp((-Kr*item)/U_ET)
     DOx_ET.append(DOir - Dx_ET)
 distance_ET = []
 for item in distance_ET_bad:
