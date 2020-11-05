@@ -92,6 +92,7 @@ ax.plot(t1, safe_MTBE, linestyle = 'dashed', color='red', label = 'Safety Level'
 ax.plot(t1, C_chicago, label = 'Chicago')
 ax.plot(t1, C_denver, label = "Denver")
 ax.plot(t1, C_phoenix, label = 'Phoenix')
+ax.axvline(x = V/Q, ymin = 0, ymax = 9, linestyle = ':', color = 'gray', alpha = 0.8, label='Residence Time')
 ax.set_xlabel('Time (hours)')
 ax.set_ylabel('Concentration of MTBE (mg/m^3)')
 ax.set_title('Concentration of MTBE (mg/m^3) vs Time (hours) in Three Cities')
@@ -149,7 +150,7 @@ Cmtbe_c = S/Lc - (S/Lc - Cin)*math.exp(-Lc*(t))
 Soxygen_c = (Q*DOw/V) - (Y*kd_c*Cmtbe_c) + (Kglo_c*DOs*SA)/V
 Loxygen_c = (Kglo_c*SA+Q)/V
 DOu_c = Soxygen_c/Loxygen_c
-#print(DOu_c - (DOu_c - DOs)*math.exp(-Loxygen_c*t)/1000)
+
 #print(DOt_c[50])
 #print(DOt_c)
 #graph
@@ -194,18 +195,17 @@ U_c = (Qr+Qw+Q)/Av
 D_not = DOir - (DOir*Qr + DOiw*Qw + DOt_c[-1]*Q)/(Q+Qr+Qw)
 Cmtbe_theta = S/Lc - (S/Lc - Cin)*math.exp(-Lc*(theta))
 #From Chicago to TechVille
-Lo = ((DOir-DOur)*Qr+(DOiw-DOuw)*Qw+Y*Cmtbe_theta*Q)/(Qr+Qw+Q)
+Lo = (((DOir-DOur)/Fr)*Qr+((DOiw-DOuw)/Fw)*Qw+Y*Cmtbe_theta*Q)/(Qr+Qw+Q)
 Xc_c = (U_c/(Kr-Kbod_c))*np.log(Kr/Kbod_c)*(1-(D_not*(Kr-Kbod_c))/(Kbod_c*Lo))
 distance_c = []
 DOx_c = []
-
 for item in range(int(Xc_c)+6001):
     distance_c.append(item)
-    Dx_c = ((Kbod_c*Lo)/(Kr-Kbod_c))*(math.exp((-Kbod_c*item)/U_c)-math.exp((-Kr*item)/U_c))+D_not*math.exp((-Kr*item)/U_c)
+    Dx_c = (((Kbod_c*Lo)/(Kr-Kbod_c))*(math.exp((-Kbod_c*item)/U_c)-math.exp((-Kr*item)/U_c))+D_not*math.exp((-Kr*item)/U_c))
     DOx_c.append(DOir - Dx_c)
+'''print('Crit Distance Chicago')
 print(DOx_c.index(min(DOx_c)))
-print(Xc_c)
-#Dx_c = ((Kbod_c*Lo)/(Kr-Kbod_c))*(math.exp((-Kbod_c*900000)/U_c)-math.exp((-Kr*900000)/U_c))+D_not*math.exp((-Kbod_c*900000)/U_c)
+print(Xc_c)'''
 
 #From TechVille to EvansTown
 U_t = (Qr+Qw+Q)/Av
@@ -213,16 +213,18 @@ DOi_into_tv = DOx_c[int(Xc_c)+6000]
 D_not_tv = DOir - (DOi_into_tv*(Qw+Q+Qr)+DOitv*Qtv)/(Qw+Q+Qr+Qtv)
 F_total_chicago = (Fr*Qr+Ffg*Q+Fw*Qw)/(Qr+Q+Qw)
 DOu_fromChicago = DOi_into_tv - Lo*F_total_chicago
-Lo_tv = (((DOi_into_tv-DOu_fromChicago)/F_total_chicago)*(Q+Qw+Qr)+((DOitv-DOutv)/0.05)*Qtv)/(Qr+Qw+Q+Qtv)
+Lo_tv = (((DOi_into_tv-DOu_fromChicago)/F_total_chicago)*(Q+Qw+Qr)+((DOitv-DOutv)/Ftv)*Qtv)/(Qr+Qw+Q+Qtv)
 Xc_tv = (U_t/(Kr-Kbod_tv))*np.log(Kr/Kbod_tv)*(1-(D_not_tv*(Kr-Kbod_tv))/(Kbod_tv*Lo_tv))
 distance_tv_bad = []
 DOx_tv = []
+
 for item in range(int(Xc_tv)-7999):
     distance_tv_bad.append(item)
-    Dx_tv = ((Kbod_tv*Lo_tv)/(Kr-Kbod_tv))*(math.exp((-Kbod_tv*item)/U_t)-math.exp((-Kr*item)/U_t))+D_not_tv*math.exp((-Kr*item)/U_t)
+    Dx_tv = (((Kbod_tv*Lo_tv)/(Kr-Kbod_tv))*(math.exp((-Kbod_tv*item)/U_t)-math.exp((-Kr*item)/U_t))+D_not_tv*math.exp((-Kr*item)/U_t))
     DOx_tv.append(DOir - Dx_tv)
+'''print('Crit Distance TV')
 print(DOx_tv.index(min(DOx_tv)))
-print(Xc_tv)
+print(Xc_tv)'''
 distance_tv = []
 for item in distance_tv_bad:
     distance_tv.append(item+Xc_c+6000)
@@ -230,23 +232,28 @@ for item in distance_tv_bad:
 #From EvansTown onward
 U_ET = (Qr+Qw+Q+Qtv)/Av
 DOi_into_ET = DOx_tv[int(Xc_tv)-8000]
+print(int(Xc_c) + 6000 + int(Xc_tv)-8000)
+print(len(DOx_tv))
+print(DOi_into_ET)
 D_not_ET = DOir - (DOi_into_ET*(Qw+Q+Qr+Qtv)+DOiet*Qet)/(Qw+Q+Qr+Qtv+Qet)
 F_total_TV = (Fr*Qr+Ffg*Q+Fw*Qw+Ftv*Qtv)/(Qr+Q+Qw+Qtv)
 DOu_fromTechVille = DOi_into_ET - Lo_tv*F_total_TV
-Lo_ET = (((DOi_into_ET-DOu_fromTechVille)/F_total_TV)*(Q+Qw+Qr+Qtv)+((DOiet-DOuet)/0.05)*Qet)/(Qr+Qw+Q+Qtv+Qet)
+Lo_ET = (((DOi_into_ET-DOu_fromTechVille)/F_total_TV)*(Q+Qw+Qr+Qtv)+((DOiet-DOuet)/Fet)*Qet)/(Qr+Qw+Q+Qtv+Qet)
+#Lo_ET = 22347
 Xc_ET = (U_ET/(Kr-Kbod_ev))*np.log(Kr/Kbod_ev)*(1-(D_not_ET*(Kr-Kbod_ev))/(Kbod_ev*Lo_ET))
 
 distance_ET_bad = []
 DOx_ET = []
 for item in range(int(Xc_ET)+10001):
     distance_ET_bad.append(item)
-    Dx_ET = ((Kbod_ev*Lo_ET)/(Kr-Kbod_ev))*(math.exp((-Kbod_ev*item)/U_ET)-math.exp((-Kr*item)/U_ET))+D_not_ET*math.exp((-Kr*item)/U_ET)
+    Dx_ET = (((Kbod_ev*Lo_ET)/(Kr-Kbod_ev))*(math.exp((-Kbod_ev*item)/U_ET)-math.exp((-Kr*item)/U_ET))+D_not_ET*math.exp((-Kr*item)/U_ET))
     DOx_ET.append(DOir - Dx_ET)
 distance_ET = []
 for item in distance_ET_bad:
     distance_ET.append(item+distance_tv[-1])
+'''print('Crit Distance ET')
 print(DOx_ET.index(min(DOx_ET)))
-print(Xc_ET)
+print(Xc_ET)'''
 #total distance list generated here
 total_d_bad = distance_c + distance_tv + distance_ET
 total_d = []
@@ -260,17 +267,22 @@ DO_limit = []
 for item in total_d:
     DO_limit.append(4)
 
+'''print('Do of Chicago ' + str(D_not))
+print('Lo of ET ' + str(Lo_ET))
+print('Do of EvansTown ' + str(D_not_ET))'''
+
 fig2, ax2 = plt.subplots()
 ax2.plot(total_d, DO_limit, linestyle = 'dashed', color='red', label = 'Safety Level')
 ax2.plot(total_d, total_DOx, label = 'Sag Curve')
 ax2.axvline(x = Xc_c/1000, ymin = 0, ymax = 9, linestyle = ':', color = 'gray', alpha = 0.8, label='Xc of Chicago')
 ax2.axvline(x = Xc_c/1000 + 6 + Xc_tv/1000, ymin = 0, ymax = 9, linestyle = '-.', color = 'gray', alpha = 0.8, label='Xc of TechVille')
 ax2.axvline(x = Xc_c/1000 + 6 + Xc_tv/1000 - 8 + Xc_ET/1000, ymin = 0, ymax = 9, linestyle = '--', color = 'gray', alpha = 0.8, label='Xc of EvansTown')
+#ax2.axvline(x = DOx_c.index(min(DOx_c))/1000 + 6 + DOx_tv.index(min(DOx_tv))/1000 - 8 + DOx_ET.index(min(DOx_ET))/1000, ymin = 0, ymax = 9, linestyle = '--', color = 'gray', alpha = 0.8, label='Xc of EvansTown')
 ax2.set_xlabel('Distance (km)')
 ax2.set_ylabel('Concentration of DO (mg/L)')
 ax2.set_title('DO Sag Curve')
 ax2.legend()
-
+'''
 fig3, ax3 = plt.subplots()
 ax3.plot(total_d, DO_limit, linestyle = 'dashed', color='red', label = 'Safety Level')
 ax3.plot(distance_tv_bad, DOx_tv, label = 'Sag Curve')
@@ -278,6 +290,6 @@ ax3.axvline(x = Xc_tv, ymin = 0, ymax = 9, linestyle = '--', color = 'gray', alp
 ax3.set_xlabel('Distance (km)')
 ax3.set_ylabel('Concentration of DO (mg/L)')
 ax3.set_title('DO Sag Curve ET')
-ax3.legend()
+ax3.legend()'''
 
 plt.show()
